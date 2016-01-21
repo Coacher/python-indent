@@ -345,8 +345,8 @@ function! GetPythonIndent()
 		let l:prevlnum = prevnonblank(v:lnum - 1)
 		let l:prevline = getline(l:prevlnum)
 
-		let l:colon = match(l:prevline, ':\s*\%(\_$\|#\)')
-		let l:prevline_ends_with_colon = (!(l:colon < 0) && (match(strpart(l:prevline, 0, l:colon), '#') < 0))
+		let l:colon = matchend(l:prevline, ':\ze\s*\%(\_$\|#\)')
+		let l:prevline_ends_with_colon = (!(l:colon < 0) && (s:SyntaxItemName(l:prevlnum, l:colon) ==# 'pythonDelimiter'))
 
 		let l:prevlnum = s:FindLogicalLineStart(l:prevlnum)
 		let l:prevline = getline(l:prevlnum)
