@@ -82,7 +82,7 @@ let s:code_suite_stop = '^\s*\%(return\|raise\|yield\|continue\|break\)\>'
 
 " Match keywords that can start multiline logical lines,
 " except those which can use implicit continuation.
-let s:multiline_kwrd = '\C\_^\s*\%(for\|with\|except\|raise\|yield\|assert\|del\|async\s\+for\)\>\s*'
+let s:multiline_kwrd = '\C\_^\s*\%(for\|with\|except\|raise\|yield\|assert\|async\s\+for\)\>\s*'
 
 " Map clause headers to the appropriate preceding ones.
 let s:header2preceding = {
@@ -362,7 +362,7 @@ function! GetPythonIndent()
 			" and add one extra level of indentation if configured by user.
 			return l:keyword_col +
 				\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition *
-				\  (l:prevline =~# '^\s*\%(for\|del\)\s\S')
+				\  (l:prevline =~# '^\s*for\s\S')
 		endif
 	else
 		" Otherwise preserve the current indentation.
