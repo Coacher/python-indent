@@ -135,10 +135,10 @@ endfunction
 
 
 " Search from the current cursor position backwards
-" until the closest unmatched opening bracket is found.
+" until the innermost unmatched opening bracket is found.
 let s:brackets_skip = 's:SyntaxItemName() !=# ''pythonDelimiter'''
 
-function! s:FindOpeningBracket()
+function! s:FindInnermostOpeningBracket()
 	let l:brackets_positions = []
 
 	" Order brackets to make positions already sorted in most cases.
@@ -304,7 +304,7 @@ function! GetPythonIndent()
 	" the opening bracket is on the current line.
 	call cursor(0, 1)
 
-	let [l:bracket_lnum, l:bracket_col] = s:FindOpeningBracket()
+	let [l:bracket_lnum, l:bracket_col] = s:FindInnermostOpeningBracket()
 	if (l:bracket_lnum > 0)
 		" Between brackets proceed as follows.
 		let l:bracket_line = getline(l:bracket_lnum)
