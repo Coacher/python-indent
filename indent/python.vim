@@ -59,9 +59,9 @@ if (g:python_indent_use_autopep8_as_formatprg && !empty(exepath('autopep8')))
 endif
 
 
-" Indent after typing <CR>, ':', closing brackets, 'elif' and 'except'.
+" Indent after typing <CR>, ':', closing brackets, 'except' and 'elif'.
 setlocal indentexpr=GetPythonIndent()
-setlocal indentkeys=!^F,o,O,<:>,0),0],0},0=elif,0=except
+setlocal indentkeys=!^F,o,O,<:>,0),0],0},0=except,0=elif
 
 
 " Search for pairs within 150 lines range and no longer than 400 milliseconds.
