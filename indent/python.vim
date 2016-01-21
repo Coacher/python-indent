@@ -279,7 +279,7 @@ function! GetPythonIndent()
 		return -1
 	endif
 
-	if !(match(l:cursynstack, '\Cpython\a*String') < 0)
+	if !(match(l:cursynstack, '\Cpython\a*\%(String\|Quotes\)') < 0)
 		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
 		" Make sure it isn't a closing quote(s) right before the opening one(s).
 		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
