@@ -80,7 +80,7 @@ let s:compound_stmt_kwrd = '\C\_^\s*\%(def\s\+\h\w*\|if\|for\|class\s\+\h\w*\|wi
 " https://docs.python.org/3/reference/simple_stmts.html
 let s:code_suite_stop = '^\s*\%(return\|raise\|yield\|continue\|break\)\>'
 
-" Match keywords that can start multiline logical lines,
+" Match keywords that can start explicit line joins,
 " except those which can use implicit continuation.
 let s:multiline_kwrd = '\C\_^\s*\%(for\|with\|except\|raise\|yield\|assert\|async\s\+for\)\>\s*'
 
@@ -175,8 +175,8 @@ endfunction
 
 
 " Search from the current cursor position backwards
-" until the beginning of the logical line is found.
-function! s:FindLogicalLineStart()
+" until the beginning of the explicit join is found.
+function! s:FindLineJoinStart()
 	let l:curlnum = line('.')
 	let l:prevlnum = l:curlnum - 1
 	let l:prevline = getline(l:prevlnum)
@@ -188,7 +188,59 @@ function! s:FindLogicalLineStart()
 		let l:prevline = getline(l:prevlnum)
 	endwhile
 
-	return [l:curlnum, indent(l:curlnum)]
+	return l:curlnum
+endfunction
+
+
+" Search from the given line backwards
+" until the beginning of the logical line is found.
+function! s:FindLogicalLineStart(line)
+	let l:curlnum = a:line
+
+	" Unfortunately VimL doesn't have the do...while loop.
+	call cursor(l:curlnum, 1)
+
+	let [l:bracket_lnum, l:__] = s:FindOutermostOpeningBracket()
+	if (l:bracket_lnum > 0)
+		let l:curlnum = l:bracket_lnum
+		call cursor(l:curlnum, 1)
+	endif
+
+	if !(match(s:SynStackNames(), '\Cpython\a*\%(String\|Quotes\)') < 0)
+		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
+		" Make sure it isn't a closing quote(s) right before the opening one(s).
+		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
+			let l:curlnum = l:quote_lnum
+			call cursor(l:curlnum, 1)
+		endif
+	endif
+
+	let l:linejoinstart = s:FindLineJoinStart()
+
+	while (l:curlnum != l:linejoinstart)
+		let l:curlnum = l:linejoinstart
+
+		call cursor(l:curlnum, 1)
+
+		let [l:bracket_lnum, l:__] = s:FindOutermostOpeningBracket()
+		if (l:bracket_lnum > 0)
+			let l:curlnum = l:bracket_lnum
+			call cursor(l:curlnum, 1)
+		endif
+
+		if !(match(s:SynStackNames(), '\Cpython\a*\%(String\|Quotes\)') < 0)
+			let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
+			" Make sure it isn't a closing quote(s) right before the opening one(s).
+			if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
+				let l:curlnum = l:quote_lnum
+				call cursor(l:curlnum, 1)
+			endif
+		endif
+
+		let l:linejoinstart = s:FindLineJoinStart()
+	endwhile
+
+	return l:curlnum
 endfunction
 
 
@@ -287,33 +339,16 @@ function! GetPythonIndent()
 		endif
 	endif
 
-	let [l:start_lnum, l:start_indent] = s:FindLogicalLineStart()
-	if (l:start_lnum == v:lnum)
-		" At the beginning of a logical line proceed as follows.
+	let l:linejoinstart = s:FindLineJoinStart()
+	if (l:linejoinstart == v:lnum)
+		" At the beginning of an explicit join proceed as follows.
 		let l:prevlnum = prevnonblank(v:lnum - 1)
 		let l:prevline = getline(l:prevlnum)
 
 		let l:colon = match(l:prevline, ':\s*\%(\_$\|#\)')
 		let l:prevline_ends_with_colon = (!(l:colon < 0) && (match(strpart(l:prevline, 0, l:colon), '#') < 0))
 
-		" Put the cursor at the beginning of the previous non-blank line
-		" to find the beginning of the previous complex logical line.
-		call cursor(l:prevlnum, 1)
-
-		" Find the beginning of the previous complex logical line.
-		let [l:bracket_lnum, l:__] = s:FindOutermostOpeningBracket()
-		if (l:bracket_lnum > 0)
-			let l:prevlnum = l:bracket_lnum
-		elseif !(match(s:SynStackNames(), '\Cpython\a*String') < 0)
-			let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-			" Make sure it isn't a closing quote(s) right before the opening one(s).
-			if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
-				let l:prevlnum = l:quote_lnum
-			endif
-		else
-			let [l:prevlnum, l:__] = s:FindLogicalLineStart()
-		endif
-
+		let l:prevlnum = s:FindLogicalLineStart(l:prevlnum)
 		let l:prevline = getline(l:prevlnum)
 		let l:previndent = indent(l:prevlnum)
 
@@ -347,15 +382,15 @@ function! GetPythonIndent()
 
 		" Otherwise preserve the current indentation.
 		return l:previndent
-	elseif (l:start_lnum == v:lnum - 1)
-		" If the beginning of the current logical line is on the previous line ...
+	elseif (l:linejoinstart == v:lnum - 1)
+		" If the beginning of the current explicit line join is on the previous line ...
 		let l:prevline = getline(v:lnum - 1)
 
 		let l:keyword_col = matchend(l:prevline, s:multiline_kwrd)
 
 		if (l:keyword_col < 0)
 			" add one extra level of indentation, unless ...
-			return l:start_indent + &shiftwidth
+			return indent(l:linejoinstart) + &shiftwidth
 		else
 			" the previous line begins with a keyword.
 			" In the latter case, vertically align
