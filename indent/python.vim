@@ -181,7 +181,8 @@ function! s:FindLogicalLineStart()
 	let l:prevlnum = l:curlnum - 1
 	let l:prevline = getline(l:prevlnum)
 
-	while ((l:prevline =~# '\\$') && (l:prevline !~# '#'))
+	while ((l:prevline =~# '\\$') &&
+		\  (s:SyntaxItemName(l:prevlnum, col([l:prevlnum, '$']) - 1) ==# 'pythonLineJoin'))
 		let l:curlnum = l:prevlnum
 		let l:prevlnum = l:curlnum - 1
 		let l:prevline = getline(l:prevlnum)
