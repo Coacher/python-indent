@@ -352,10 +352,10 @@ function! GetPythonIndent()
 		let l:previndent = indent(l:prevlnum)
 
 		if (getline(l:prevlnum) =~# s:code_suite_stop)
-			" If the previous logical line is the end of a code suite ...
-			let l:dedent = max([l:previndent - &shiftwidth, 0])
-			" remove one level of indentation, unless the current line was already dedented.
-			return min([l:curindent, l:dedent])
+			" If the previous logical line is the end of a code suite
+			" remove one level of indentation,
+			" unless the current line was already dedented.
+			return min([l:curindent, max([l:previndent - &shiftwidth, 0])])
 		endif
 
 		if (l:prevline_ends_with_colon)
