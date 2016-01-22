@@ -175,7 +175,7 @@ endfunction
 
 
 " Search from the current cursor position backwards
-" until the beginning of the explicit join is found.
+" until the beginning of the explicit line join is found.
 function! s:FindLineJoinStart()
 	let l:curlnum = line('.')
 	let l:prevlnum = l:curlnum - 1
@@ -341,7 +341,7 @@ function! GetPythonIndent()
 
 	let l:linejoinstart = s:FindLineJoinStart()
 	if (l:linejoinstart == v:lnum)
-		" At the beginning of an explicit join proceed as follows.
+		" At the beginning of an explicit line join proceed as follows.
 		let l:prevlnum = prevnonblank(v:lnum - 1)
 
 		let l:colon = matchend(getline(l:prevlnum), ':\ze\s*\%(\_$\|#\)')
