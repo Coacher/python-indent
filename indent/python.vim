@@ -3,9 +3,9 @@
 " License: Vim license or MIT
 "
 " All the code was written by me from scratch, though some ideas were reused
-" from Eric Mc Sween's, Hynek Schlawack's and the original Vim indent files.
+" from Eric Mc Sween's, Hynek Schlawack's and the upstream Vim indent files.
 "
-" Comments beginning with '>' are quotes from PEP 8 document available at:
+" Comments beginning with '>' are quotes from the PEP 8 document available at:
 " https://www.python.org/dev/peps/pep-0008/
 
 
@@ -53,13 +53,13 @@ if (g:python_indent_use_spaces_for_indentation)
 endif
 
 if (g:python_indent_use_autopep8_as_formatprg && !empty(exepath('autopep8')))
-	" --indent-size must be 0 to preserve the indentation level
-	" of the text nested more than one indentation level deep.
+	" --indent-size must be 0 to preserve the indentation level of
+	" the text that is nested more than one indentation level deep.
 	let &l:formatprg = 'autopep8 -p 512 -aaa --indent-size 0 -'
 endif
 
 
-" Indent after typing <CR>, ':', closing brackets, 'except' and 'elif'.
+" Recalculate indent after typing <CR>, ':', closing brackets, 'except', and 'elif'.
 setlocal indentexpr=GetPythonIndent()
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},0=except,0=elif
 
@@ -81,7 +81,7 @@ let s:compound_stmt_kwrd = '\C\_^\s*\%(def\s\+\h\w*\|if\|for\|class\s\+\h\w*\|wi
 let s:code_suite_stop = '^\s*\%(return\|raise\|yield\|continue\|break\)\>'
 
 " Match keywords that can start explicit line joins,
-" except those which can use implicit continuation.
+" except for keywords that can use implicit continuation.
 let s:multiline_kwrd = '\C\_^\s*\%(for\|with\|except\|raise\|yield\|assert\|async\s\+for\)\>\s*'
 
 " Map clause headers to the appropriate preceding ones.
@@ -245,8 +245,7 @@ endfunction
 
 
 " Search from the current cursor position backwards
-" skipping blank lines and nested code blocks
-" until the line matching {regex} is found.
+" until the clause header that matches the given regex is found.
 function! s:FindPrecedingHeader(regex)
 	let l:curlnum = prevnonblank(line('.') - 1)
 	let l:curindent = indent(l:curlnum)
@@ -311,7 +310,7 @@ function! GetPythonIndent()
 		let l:bracket_indent = indent(l:bracket_lnum)
 
 		if (match(strpart(l:bracket_line, l:bracket_col), '^\s*\%(\_$\|#\)') < 0)
-			" If the opening bracket is not followed by spaces or a comment ...
+			" If the opening bracket isn't followed only by spaces or a comment ...
 			if (l:bracket_col != matchend(l:bracket_line, '\C\_^\s*if\s') + 1)
 				" align vertically after the opening bracket, unless ...
 				return l:bracket_col
@@ -323,11 +322,10 @@ function! GetPythonIndent()
 					\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition
 			endif
 		else
-			" If the opening bracket is only followed by spaces or a comment ...
+			" If the opening bracket is followed only by spaces or a comment ...
 			if !((l:curline =~# '^\s*[)\]}]$') && !g:python_indent_line_up_closing_bracket_with_last_line)
-				" add one extra level of indentation to the indentation of
-				" the line with the opening bracket and add one more level
-				" when a keyword precedes the opening bracket, unless ...
+				" add one level of indentation to the indentation of the line with the opening bracket
+				" and add one more level when a keyword precedes the opening bracket, unless ...
 				return l:bracket_indent + &shiftwidth +
 					\  &shiftwidth * (l:bracket_col == matchend(l:bracket_line, s:compound_stmt_kwrd) + 1)
 			else
@@ -366,9 +364,9 @@ function! GetPythonIndent()
 
 		for [l:header, l:preceding] in items(s:header2preceding)
 			if (l:curline =~# l:header)
-				" If the current line is a non-leading header from a compound statement ...
+				" If the current line begins with a non-leading header from a compound statement ...
 				let [l:__, l:preceding_indent] = s:FindPrecedingHeader(l:preceding)
-				" vertically align with preceding headers from the same compound statement.
+				" vertically align with the preceding header(s) from the same compound statement.
 				return l:preceding_indent
 			endif
 		endfor
@@ -383,13 +381,13 @@ function! GetPythonIndent()
 		let l:keyword_col = matchend(l:prevline, s:multiline_kwrd)
 
 		if (l:keyword_col < 0)
-			" add one extra level of indentation, unless ...
+			" add one level of indentation, unless ...
 			return indent(l:linejoinstart) + &shiftwidth
 		else
 			" the previous line begins with a keyword.
 			" In the latter case, vertically align
-			" with the first non-space character after the keyword
-			" and add one extra level of indentation if configured by user.
+			" with the first non-space character after the keyword and
+			" add one extra level of indentation if configured by user.
 			return l:keyword_col +
 				\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition *
 				\  (l:prevline =~# '^\s*for\s\S')
