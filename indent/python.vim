@@ -342,6 +342,7 @@ function! GetPythonIndent()
 	let l:linejoinstart = s:FindLineJoinStart()
 	if (l:linejoinstart == v:lnum)
 		" At the beginning of an explicit line join proceed as follows.
+		let l:curindent = indent(v:lnum)
 		let l:prevlnum = prevnonblank(v:lnum - 1)
 
 		let l:colon = matchend(getline(l:prevlnum), ':\ze\s*\%(\_$\|#\)')
@@ -353,14 +354,8 @@ function! GetPythonIndent()
 		if (getline(l:prevlnum) =~# s:code_suite_stop)
 			" If the previous logical line is the end of a code suite ...
 			let l:dedent = max([l:previndent - &shiftwidth, 0])
-
-			if (indent(v:lnum) > l:dedent)
-				" remove one level of indentation, unless ...
-				return l:dedent
-			else
-				" the current line was already dedented.
-				return -1
-			endif
+			" remove one level of indentation, unless the current line was already dedented.
+			return min([l:curindent, l:dedent])
 		endif
 
 		if (l:prevline_ends_with_colon)
