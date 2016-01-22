@@ -373,8 +373,9 @@ function! GetPythonIndent()
 			endif
 		endfor
 
-		" Otherwise preserve the current indentation.
-		return l:previndent
+		" Otherwise vertically align with the previous logical line,
+		" unless the current line was already dedented.
+		return min([l:curindent, l:previndent])
 	elseif (l:linejoinstart == v:lnum - 1)
 		" If the beginning of the current explicit line join is on the previous line ...
 		let l:prevline = getline(l:linejoinstart)
