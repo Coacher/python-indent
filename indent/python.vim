@@ -382,7 +382,7 @@ function! GetPythonIndent()
 		return l:previndent
 	elseif (l:linejoinstart == v:lnum - 1)
 		" If the beginning of the current explicit line join is on the previous line ...
-		let l:prevline = getline(v:lnum - 1)
+		let l:prevline = getline(l:linejoinstart)
 
 		let l:keyword_col = matchend(l:prevline, s:multiline_kwrd)
 
