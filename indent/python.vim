@@ -343,16 +343,14 @@ function! GetPythonIndent()
 	if (l:linejoinstart == v:lnum)
 		" At the beginning of an explicit join proceed as follows.
 		let l:prevlnum = prevnonblank(v:lnum - 1)
-		let l:prevline = getline(l:prevlnum)
 
-		let l:colon = matchend(l:prevline, ':\ze\s*\%(\_$\|#\)')
+		let l:colon = matchend(getline(l:prevlnum), ':\ze\s*\%(\_$\|#\)')
 		let l:prevline_ends_with_colon = (!(l:colon < 0) && (s:SyntaxItemName(l:prevlnum, l:colon) ==# 'pythonDelimiter'))
 
 		let l:prevlnum = s:FindLogicalLineStart(l:prevlnum)
-		let l:prevline = getline(l:prevlnum)
 		let l:previndent = indent(l:prevlnum)
 
-		if (l:prevline =~# s:code_suite_stop)
+		if (getline(l:prevlnum) =~# s:code_suite_stop)
 			" If the previous line is the end of a code suite ...
 			let l:dedent = max([l:previndent - &shiftwidth, 0])
 
