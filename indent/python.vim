@@ -351,7 +351,7 @@ function! GetPythonIndent()
 		let l:previndent = indent(l:prevlnum)
 
 		if (getline(l:prevlnum) =~# s:code_suite_stop)
-			" If the previous line is the end of a code suite ...
+			" If the previous logical line is the end of a code suite ...
 			let l:dedent = max([l:previndent - &shiftwidth, 0])
 
 			if (indent(v:lnum) > l:dedent)
@@ -364,7 +364,7 @@ function! GetPythonIndent()
 		endif
 
 		if (l:prevline_ends_with_colon)
-			" If the previous line ends with a colon outside of a comment
+			" If the previous logical line ends with a colon outside of a comment
 			" add one level of indentation.
 			return l:previndent + &shiftwidth
 		endif
