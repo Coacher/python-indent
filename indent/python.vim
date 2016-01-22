@@ -179,13 +179,11 @@ endfunction
 function! s:FindLineJoinStart()
 	let l:curlnum = line('.')
 	let l:prevlnum = l:curlnum - 1
-	let l:prevline = getline(l:prevlnum)
 
-	while ((l:prevline =~# '\\$') &&
+	while ((getline(l:prevlnum) =~# '\\$') &&
 		\  (s:SyntaxItemName(l:prevlnum, col([l:prevlnum, '$']) - 1) ==# 'pythonLineJoin'))
 		let l:curlnum = l:prevlnum
 		let l:prevlnum = l:curlnum - 1
-		let l:prevline = getline(l:prevlnum)
 	endwhile
 
 	return l:curlnum
