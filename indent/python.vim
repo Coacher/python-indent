@@ -379,8 +379,9 @@ function! GetPythonIndent()
 		let l:nonspace_after_keyword = matchend(l:prevline, s:multiline_kwrd)
 
 		if (l:nonspace_after_keyword < 0)
-			" add one level of indentation, unless ...
-			return indent(l:linejoinstart) + &shiftwidth
+			" add one level of indentation when
+			" the current line wasn't already indented more, unless ...
+			return max([indent(v:lnum), indent(l:linejoinstart) + &shiftwidth])
 		else
 			" the previous line begins with a keyword.
 			" In the latter case, vertically align
