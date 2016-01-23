@@ -376,9 +376,9 @@ function! GetPythonIndent()
 		" If the beginning of the current explicit line join is on the previous line ...
 		let l:prevline = getline(l:linejoinstart)
 
-		let l:keyword_col = matchend(l:prevline, s:multiline_kwrd)
+		let l:nonspace_after_keyword = matchend(l:prevline, s:multiline_kwrd)
 
-		if (l:keyword_col < 0)
+		if (l:nonspace_after_keyword < 0)
 			" add one level of indentation, unless ...
 			return indent(l:linejoinstart) + &shiftwidth
 		else
@@ -386,7 +386,7 @@ function! GetPythonIndent()
 			" In the latter case, vertically align
 			" with the first non-space character after the keyword and
 			" add one extra level of indentation if configured by user.
-			return l:keyword_col +
+			return l:nonspace_after_keyword +
 				\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition *
 				\  (l:prevline =~# '^\s*for\s\S')
 		endif
