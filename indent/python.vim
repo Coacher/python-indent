@@ -206,7 +206,7 @@ function! s:FindLogicalLineStart(line)
 
 	if !(match(s:SynStackNames(), '\Cpython\a*\%(String\|Quotes\)') < 0)
 		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-		" Make sure it isn't a closing quote(s) right before the opening one(s).
+		" Make sure it isn't a closing quote(s) before the opening one(s).
 		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
 			let l:curlnum = l:quote_lnum
 			call cursor(l:curlnum, 1)
@@ -228,7 +228,7 @@ function! s:FindLogicalLineStart(line)
 
 		if !(match(s:SynStackNames(), '\Cpython\a*\%(String\|Quotes\)') < 0)
 			let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-			" Make sure it isn't a closing quote(s) right before the opening one(s).
+			" Make sure it isn't a closing quote(s) before the opening one(s).
 			if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
 				let l:curlnum = l:quote_lnum
 				call cursor(l:curlnum, 1)
@@ -278,7 +278,7 @@ function! GetPythonIndent()
 
 	if !(match(l:cursynstack, '\Cpython\a*\%(String\|Quotes\)') < 0)
 		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-		" Make sure it isn't a closing quote(s) right before the opening one(s).
+		" Make sure it isn't a closing quote(s) before the opening one(s).
 		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
 			" Inside strings proceed as follows.
 			if (l:quote_lnum != v:lnum - 1)
@@ -349,8 +349,8 @@ function! GetPythonIndent()
 
 		if (getline(l:prevlnum) =~# s:code_suite_stop)
 			" If the previous logical line is the end of a code suite
-			" remove one level of indentation,
-			" unless the current line was already dedented.
+			" remove one level of indentation when
+			" the current line wasn't already dedented.
 			return min([l:curindent, max([l:previndent - &shiftwidth, 0])])
 		endif
 
@@ -369,8 +369,8 @@ function! GetPythonIndent()
 			endif
 		endfor
 
-		" Otherwise vertically align with the previous logical line,
-		" unless the current line was already dedented.
+		" Otherwise vertically align with the previous logical line when
+		" the current line wasn't already dedented.
 		return min([l:curindent, l:previndent])
 	elseif (l:linejoinstart == v:lnum - 1)
 		" If the beginning of the current explicit line join is on the previous line ...
@@ -386,7 +386,8 @@ function! GetPythonIndent()
 			" the previous line begins with a keyword.
 			" In the latter case, vertically align
 			" with the first non-space character after the keyword and
-			" add one extra level of indentation if configured by user.
+			" add one extra level of indentation when it's needed to distinguish
+			" from the following code suite and is also configured by user.
 			return l:nonspace_after_keyword +
 				\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition *
 				\  (l:prevline =~# '^\s*for\s\S')
