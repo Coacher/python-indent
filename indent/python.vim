@@ -198,7 +198,7 @@ function! s:FindLogicalLineStart(line)
 	" Unfortunately VimL doesn't have the do...while loop.
 	call cursor(l:curlnum, 1)
 
-	let [l:bracket_lnum, l:__] = s:FindOutermostOpeningBracket()
+	let l:bracket_lnum = s:FindOutermostOpeningBracket()[0]
 	if (l:bracket_lnum > 0)
 		let l:curlnum = l:bracket_lnum
 		call cursor(l:curlnum, 1)
@@ -220,7 +220,7 @@ function! s:FindLogicalLineStart(line)
 
 		call cursor(l:curlnum, 1)
 
-		let [l:bracket_lnum, l:__] = s:FindOutermostOpeningBracket()
+		let l:bracket_lnum = s:FindOutermostOpeningBracket()[0]
 		if (l:bracket_lnum > 0)
 			let l:curlnum = l:bracket_lnum
 			call cursor(l:curlnum, 1)
