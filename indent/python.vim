@@ -362,10 +362,9 @@ function! GetPythonIndent()
 
 		for [l:header, l:preceding] in items(s:header2preceding)
 			if (l:curline =~# l:header)
-				" If the current line begins with a non-leading header from a compound statement ...
-				let [l:__, l:preceding_indent] = s:FindPrecedingHeader(l:preceding)
+				" If the current line begins with a non-leading header from a compound statement
 				" vertically align with the preceding header(s) from the same compound statement.
-				return l:preceding_indent
+				return s:FindPrecedingHeader(l:preceding)[1]
 			endif
 		endfor
 
