@@ -396,4 +396,5 @@ function! GetPythonIndent()
 		return -1
 	endif
 endfunction
+
 " vim:set ts=4 sts=0 noet sw=4 ff=unix foldenable foldmethod=marker:
