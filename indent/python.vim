@@ -28,9 +28,6 @@ let g:python_indent_extra_indent_in_multiline_if_condition =
 let g:python_indent_use_spaces_for_indentation =
 	\ get(g:, 'python_indent_use_spaces_for_indentation', 1)
 
-let g:python_indent_use_autopep8_as_formatprg =
-	\ get(g:, 'python_indent_use_autopep8_as_formatprg', 1)
-
 
 " Disable Lisp mode.
 setlocal nolisp
@@ -50,12 +47,6 @@ if (g:python_indent_use_spaces_for_indentation)
 	" > Tabs should be used solely to remain consistent
 	" > with code that is already indented with tabs.
 	setlocal expandtab
-endif
-
-if (g:python_indent_use_autopep8_as_formatprg && !empty(exepath('autopep8')))
-	" --indent-size must be 0 to preserve the indentation level of
-	" the text that is nested more than one indentation level deep.
-	let &l:formatprg = 'autopep8 -p 512 -aaa --indent-size 0 -'
 endif
 
 
