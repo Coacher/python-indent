@@ -354,21 +354,21 @@ function! GetPythonIndent()
 		let l:previndent = indent(l:prevlnum)
 
 		if (getline(l:prevlnum) =~# s:code_suite_stop)
-			" If the previous logical line is the end of a code suite
+			" If the previous logical line is the end of a code suite,
 			" remove one level of indentation when
 			" the current line wasn't already dedented.
 			return min([l:curindent, max([l:previndent - &shiftwidth, 0])])
 		endif
 
 		if (l:prevline_ends_with_colon)
-			" If the previous logical line ends with a colon outside of a comment
+			" If the previous logical line ends with a colon outside of a comment,
 			" add one level of indentation.
 			return l:previndent + &shiftwidth
 		endif
 
 		for [l:header, l:preceding] in items(s:header2preceding)
 			if (l:curline =~# l:header)
-				" If the current line begins with a non-leading header from a compound statement
+				" If the current line begins with a non-leading header from a compound statement,
 				" vertically align with the preceding header(s) from the same compound statement.
 				return s:FindPrecedingHeader(l:preceding)[1]
 			endif
