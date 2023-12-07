@@ -279,8 +279,9 @@ function! GetPythonIndent()
 				" the opening quote(s) is on the previous line.
 				" In the latter case, vertically align
 				" docstrings with the indentation of the opening quotes and
-				" regular strings with the first column of the current line.
-				return (l:quote_col == matchend(getline(l:quote_lnum), '^\s*\%("""\|''''''\)')) ? -1 : 0
+				" add one extra level of indentation for regular strings.
+				return (l:quote_col == matchend(getline(l:quote_lnum), '^\s*\%("""\|''''''\)'))
+					\  ? -1 : indent(l:quote_lnum) + &shiftwidth
 			endif
 		endif
 	endif
