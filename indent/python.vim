@@ -287,11 +287,25 @@ function! GetPythonIndent()
 	endif
 
 	let l:curline = getline(v:lnum)
+	let l:curspos = getcurpos()
 
 	" Put the cursor at the beginning of the current line
 	" since we don't want to indent inside brackets when
-	" the opening bracket is on the current line.
+	" the opening bracket is on the current line and
+	" we don't want to indent after long strings when
+	" the closing quotes are on the current line.
 	call cursor(0, 1)
+
+	if !(match(s:SynStackNames(), '\Cpython\%(\a*LongString\|TripleQuotes\)') < 0)
+		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
+		" Make sure it isn't a closing quote(s) before the opening one(s).
+		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
+			" If the current line starts with the ending of a long string,
+			" preserve the current indentation and the cursor position.
+			call setpos('.', l:curspos)
+			return -1
+		endif
+	endif
 
 	let [l:bracket_lnum, l:bracket_col] = s:FindInnermostOpeningBracket()
 	if (l:bracket_lnum > 0)
