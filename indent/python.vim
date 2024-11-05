@@ -63,8 +63,8 @@ let s:searchpair_timeout = 400
 " Match keywords that start non-trivial clause headers.
 " https://docs.python.org/2/reference/compound_stmts.html
 " https://docs.python.org/3/reference/compound_stmts.html
-let s:compound_stmt_kwrd = '\C\_^\s*\%(def\s\+\h\w*\|if\|for\|class\s\+\h\w*\|with\|except'.
-						\  '\|elif\|while\|async\s\+\%(def\s\+\h\w*\|for\|while\)\)\>\s*'
+let s:compound_stmt_kwrd = '\C\_^\s*\%(def\s\+\h\w*\|if\|for\|class\s\+\h\w*\|with\|except\|elif'.
+						\  '\|while\|match\|case\|async\s\+\%(def\s\+\h\w*\|for\|while\)\)\>\s*'
 
 " Match keywords that stop execution of code suites.
 " https://docs.python.org/2/reference/simple_stmts.html
@@ -81,6 +81,7 @@ let s:header2preceding = {
 	\ '^\s*except\>':  '^\s*\%(try\|except\)\>',
 	\ '^\s*elif\>':    '^\s*\%(if\|elif\)\>',
 	\ '^\s*finally\>': '^\s*\%(try\|except\|else\)\>',
+	\ '^\s*case\>':    '^\s*\%(case\)\>',
 \}
 
 
