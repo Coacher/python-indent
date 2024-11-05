@@ -6,7 +6,7 @@
 " from Eric Mc Sween's, Hynek Schlawack's and the upstream Vim indent files.
 "
 " Comments beginning with '>' are quotes from the PEP 8 document available at:
-" https://www.python.org/dev/peps/pep-0008/
+" https://peps.python.org/pep-0008/
 
 
 if exists('b:did_indent')
@@ -15,16 +15,16 @@ endif
 let b:did_indent = 1
 
 
-" https://www.python.org/dev/peps/pep-0008/#indentation
+" https://peps.python.org/pep-0008/#indentation
 let g:python_indent_line_up_closing_bracket_with_last_line =
 	\ get(g:, 'python_indent_line_up_closing_bracket_with_last_line', 1)
 
-" https://www.python.org/dev/peps/pep-0008/#multiline-if-statements
-" https://www.python.org/dev/peps/pep-0008/#maximum-line-length
+" https://peps.python.org/pep-0008/#multiline-if-statements
+" https://peps.python.org/pep-0008/#maximum-line-length
 let g:python_indent_extra_indent_in_multiline_if_condition =
 	\ get(g:, 'python_indent_extra_indent_in_multiline_if_condition', 1)
 
-" https://www.python.org/dev/peps/pep-0008/#tabs-or-spaces
+" https://peps.python.org/pep-0008/#tabs-or-spaces
 let g:python_indent_use_spaces_for_indentation =
 	\ get(g:, 'python_indent_use_spaces_for_indentation', 1)
 
