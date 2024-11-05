@@ -344,7 +344,7 @@ function! GetPythonIndent()
 
 	let l:linejoinstart = s:FindLineJoinStart()
 	if (l:linejoinstart == v:lnum)
-		" At the beginning of an explicit line join proceed as follows.
+		" Outside of explicit line joins proceed as follows.
 		let l:curindent = indent(v:lnum)
 		let l:prevlnum = prevnonblank(v:lnum - 1)
 
