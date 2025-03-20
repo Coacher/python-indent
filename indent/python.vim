@@ -93,7 +93,7 @@ endfunction
 
 " Search from the current cursor position backwards
 " until the closest unmatched opening quote is found.
-let s:quotes_skip = 's:SyntaxItemName() !~# ''python\%(Triple\)\=Quotes'''
+let s:quotes_skip = 'match(s:AllSyntaxNames(), ''\Cpython\a*String'') < 0'
 
 function! s:FindOpeningQuote()
 	return searchpairpos(
