@@ -322,42 +322,41 @@ function! GetPythonIndent()
 		endif
 	endif
 
+	" Inside regular code proceed as follows.
 	let l:linejoinstart = s:FindLineJoinStart()
 	if (l:linejoinstart == v:lnum)
 		" Outside of explicit line joins proceed as follows.
-		let l:curindent = indent(v:lnum)
 		let l:prevlnum = prevnonblank(v:lnum - 1)
 
 		let l:colon = matchend(getline(l:prevlnum), ':\ze\s*\%(\_$\|#\)')
-		let l:prevline_ends_with_colon = (!(l:colon < 0) && (s:SyntaxItemName(l:prevlnum, l:colon) ==# 'pythonDelimiter'))
+		if (l:colon >= 0) && (s:SyntaxName(l:prevlnum, l:colon) ==# 'pythonDelimiter')
+			" If the previous screen line ends with a colon outside of a comment,
+			" add one level to the previous logical line's indentation.
+			return indent(s:FindLogicalLineStart(l:prevlnum)) + &shiftwidth
+		endif
 
 		let l:prevlnum = s:FindLogicalLineStart(l:prevlnum)
-		let l:previndent = indent(l:prevlnum)
 
 		if (getline(l:prevlnum) =~# s:code_suite_stop)
 			" If the previous logical line is the end of a code suite,
-			" remove one level of indentation when
-			" the current line wasn't already dedented.
-			return min([l:curindent, max([l:previndent - &shiftwidth, 0])])
+			" remove one level from the previous logical line's indentation when
+			" the current line wasn't dedented more.
+			return min([indent(v:lnum), max([indent(l:prevlnum) - &shiftwidth, 0])])
 		endif
 
-		if (l:prevline_ends_with_colon)
-			" If the previous logical line ends with a colon outside of a comment,
-			" add one level of indentation.
-			return l:previndent + &shiftwidth
-		endif
-
+		let l:curline = getline(v:lnum)
 		for [l:header, l:preceding] in items(s:header2preceding)
 			if (l:curline =~# l:header)
-				" If the current line begins with a non-leading header from a compound statement,
-				" vertically align with the preceding header(s) from the same compound statement.
-				return s:FindPrecedingHeader(l:preceding)[1]
+				" If the current line starts with a non-leading header of a compound statement,
+				" use the indentation of the preceding header of the same compound statement when
+				" the current line wasn't dedented more.
+				return min([indent(v:lnum), s:FindPrecedingHeaderIndent(l:prevlnum, l:preceding)])
 			endif
 		endfor
 
-		" Otherwise vertically align with the previous logical line when
-		" the current line wasn't already dedented.
-		return min([l:curindent, l:previndent])
+		" Otherwise, use the previous logical line's indentation when
+		" the current line wasn't dedented more.
+		return min([indent(v:lnum), indent(l:prevlnum)])
 	elseif (l:linejoinstart == v:lnum - 1)
 		" If the current line is a part of an explicit line join and
 		" the explicit line join starts on the previous line, ...
