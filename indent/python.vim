@@ -85,19 +85,9 @@ let s:header2preceding = {
 
 
 " {{{
-" Return the list of syntax item names at the given position
-" or at the current cursor position if none is given.
-function! s:SynStackNames(...)
-	let [l:lnum, l:col] = !(a:0) ? [line('.'), col('.')] : a:000
-	return map(synstack(l:lnum, l:col), 'synIDattr(v:val, ''name'')')
-endfunction
-
-
-" Return the syntax item name at the given position
-" or at the current cursor position if none is given.
-function! s:SyntaxItemName(...)
-	let [l:lnum, l:col] = !(a:0) ? [line('.'), col('.')] : a:000
-	return synIDattr(synID(l:lnum, l:col, 1), 'name')
+" Return the list of syntax item names at the current cursor position.
+function! s:AllSyntaxNames()
+	return map(synstack(line('.'), col('.')), 'synIDattr(v:val, ''name'')')
 endfunction
 
 
@@ -110,6 +100,14 @@ function! s:FindOpeningQuote()
 		\ '["'']', '', '["'']', 'bnW', s:quotes_skip,
 		\ max([line('.') - s:searchpair_offset, 1]), s:searchpair_timeout
 	\)
+endfunction
+
+
+" Return the syntax item name at the given position
+" or at the current cursor position if none is given.
+function! s:SyntaxName(...)
+	let [l:lnum, l:col] = a:0 ? a:000 : [line('.'), col('.')]
+	return synIDattr(synID(l:lnum, l:col, v:true), 'name')
 endfunction
 
 
@@ -127,7 +125,7 @@ endfunction
 
 " Search from the current cursor position backwards
 " until the innermost unmatched opening bracket is found.
-let s:brackets_skip = 's:SyntaxItemName() !=# ''pythonDelimiter'''
+let s:brackets_skip = 's:SyntaxName() !=# ''pythonDelimiter'''
 
 function! s:FindInnermostOpeningBracket()
 	let l:brackets_positions = []
