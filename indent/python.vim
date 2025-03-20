@@ -60,8 +60,9 @@ let s:searchpair_timeout = 400
 " Match keywords that start non-trivial clause headers.
 " https://docs.python.org/2/reference/compound_stmts.html
 " https://docs.python.org/3/reference/compound_stmts.html
-let s:compound_stmt_kwrd = '\C\_^\s*\%(def\s\+\h\w*\|if\|for\|class\s\+\h\w*\|with\|except\|elif'.
-						\  '\|while\|match\|case\|async\s\+\%(def\s\+\h\w*\|for\|while\)\)\>\s*'
+let s:compound_stmt_kwrd =
+	\ '\C\_^\s*\%(def\s\+\h\w*\|if\|for\|class\s\+\h\w*\|with\|except\|elif'.
+	\ '\|while\|match\|case\|async\s\+\%(def\s\+\h\w*\|for\|while\)\)\>\s*'
 
 " Match keywords that stop execution of code suites.
 " https://docs.python.org/2/reference/simple_stmts.html
@@ -70,7 +71,8 @@ let s:code_suite_stop = '^\s*\%(return\|raise\|pass\|continue\|break\)\>'
 
 " Match keywords that can start explicit line joins,
 " except for keywords that can use implicit continuation.
-let s:multiline_kwrd = '\C\_^\s*\%(for\|with\|except\|raise\|yield\|assert\|async\s\+for\)\>\s*'
+let s:multiline_kwrd =
+	\ '\C\_^\s*\%(for\|with\|except\|raise\|yield\|assert\|async\s\+for\)\>\s*'
 
 " Map clause headers to the appropriate preceding ones.
 let s:header2preceding = {
