@@ -359,27 +359,30 @@ function! GetPythonIndent()
 		" the current line wasn't already dedented.
 		return min([l:curindent, l:previndent])
 	elseif (l:linejoinstart == v:lnum - 1)
-		" If the beginning of the current explicit line join is on the previous line ...
+		" If the current line is a part of an explicit line join and
+		" the explicit line join starts on the previous line, ...
 		let l:prevline = getline(l:linejoinstart)
-
 		let l:nonspace_after_keyword = matchend(l:prevline, s:multiline_kwrd)
 
-		if (l:nonspace_after_keyword < 0)
-			" add one level of indentation when
-			" the current line wasn't already indented more, unless ...
-			return max([indent(v:lnum), indent(l:linejoinstart) + &shiftwidth])
-		else
-			" the previous line begins with a keyword.
-			" In the latter case, vertically align
-			" with the first non-space character after the keyword and
-			" add one extra level of indentation when it's needed to distinguish
-			" from the following code suite and is also configured by user.
+		if (l:nonspace_after_keyword >= 0)
+			" if the previous line starts with a multiline keyword,
+			" vertically align with the first non-whitespace character after the keyword and
+			" add one extra level of indentation when
+			" it's required to distinguish the current line from the nested code suite and
+			" it's also configured by user, ...
 			return l:nonspace_after_keyword +
 				\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition *
 				\  (l:prevline =~# '^\s*for\s\S')
+		else
+			" if the previous line doesn't start with a multiline keyword,
+			" add one level to the previous line's indentation when
+			" the current line wasn't indented more.
+			return max([indent(v:lnum), indent(l:linejoinstart) + &shiftwidth])
 		endif
 	else
-		" Otherwise preserve the current indentation.
+		" If the current line is a part of an explicit line join and
+		" the explicit line join doesn't start on the previous line,
+		" keep the current indentation.
 		return -1
 	endif
 endfunction
