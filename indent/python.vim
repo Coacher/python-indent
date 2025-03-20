@@ -183,32 +183,13 @@ endfunction
 
 " Search from the given line backwards
 " until the beginning of the logical line is found.
+" NB: This function moves the cursor.
 function! s:FindLogicalLineStart(line)
 	let l:curlnum = a:line
+	let l:startlnum = -1
 
-	" Unfortunately VimL doesn't have the do...while loop.
-	call cursor(l:curlnum, 1)
-
-	let l:bracket_lnum = s:FindOutermostOpeningBracket()[0]
-	if (l:bracket_lnum > 0)
-		let l:curlnum = l:bracket_lnum
-		call cursor(l:curlnum, 1)
-	endif
-
-	if !(match(s:SynStackNames(), '\Cpython\a*\%(String\|Quotes\)') < 0)
-		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-		" Make sure it isn't a closing quote(s) before the opening one(s).
-		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
-			let l:curlnum = l:quote_lnum
-			call cursor(l:curlnum, 1)
-		endif
-	endif
-
-	let l:linejoinstart = s:FindLineJoinStart()
-
-	while (l:curlnum != l:linejoinstart)
-		let l:curlnum = l:linejoinstart
-
+	while (l:startlnum != l:curlnum)
+		let l:startlnum = l:curlnum
 		call cursor(l:curlnum, 1)
 
 		let l:bracket_lnum = s:FindOutermostOpeningBracket()[0]
@@ -217,19 +198,18 @@ function! s:FindLogicalLineStart(line)
 			call cursor(l:curlnum, 1)
 		endif
 
-		if !(match(s:SynStackNames(), '\Cpython\a*\%(String\|Quotes\)') < 0)
-			let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-			" Make sure it isn't a closing quote(s) before the opening one(s).
-			if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
+		if (match(s:AllSyntaxNames(), '\Cpython\a*\%(String\|Quotes\)') >= 0)
+			let l:quote_lnum = s:FindOpeningQuote()[0]
+			if (l:quote_lnum > 0)
 				let l:curlnum = l:quote_lnum
 				call cursor(l:curlnum, 1)
 			endif
 		endif
 
-		let l:linejoinstart = s:FindLineJoinStart()
+		let l:curlnum = s:FindLineJoinStart()
 	endwhile
 
-	return l:curlnum
+	return l:startlnum
 endfunction
 
 
