@@ -15,14 +15,13 @@ endif
 let b:did_indent = 1
 
 
+" https://peps.python.org/pep-0008/#multiline-if-statements
+let g:python_indent_extra_indent_in_multiline_if_condition =
+	\ get(g:, 'python_indent_extra_indent_in_multiline_if_condition', 0)
+
 " https://peps.python.org/pep-0008/#indentation
 let g:python_indent_line_up_closing_bracket_with_last_line =
 	\ get(g:, 'python_indent_line_up_closing_bracket_with_last_line', 1)
-
-" https://peps.python.org/pep-0008/#multiline-if-statements
-" https://peps.python.org/pep-0008/#maximum-line-length
-let g:python_indent_extra_indent_in_multiline_if_condition =
-	\ get(g:, 'python_indent_extra_indent_in_multiline_if_condition', 1)
 
 " https://peps.python.org/pep-0008/#tabs-or-spaces
 let g:python_indent_use_spaces_for_indentation =
@@ -37,9 +36,7 @@ setlocal autoindent
 " > Use 4 spaces per indentation level.
 setlocal tabstop=4
 setlocal shiftwidth=4
-" > Python 3 disallows mixing the use of tabs and spaces for indentation.
-" > Python 2 code indented with a mixture of tabs and spaces
-" > should be converted to using spaces exclusively.
+" > Python disallows mixing tabs and spaces for indentation.
 setlocal softtabstop=0
 
 if (g:python_indent_use_spaces_for_indentation)
