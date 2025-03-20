@@ -47,9 +47,9 @@ if g:python_indent_use_spaces_for_indentation
 endif
 
 
-" Recalculate indent after typing <CR>, ':', closing brackets, 'except', and 'elif'.
+" Reindent after typing <CR>, ':', closing brackets, 'except', 'elif', 'case'.
 setlocal indentexpr=GetPythonIndent()
-setlocal indentkeys=!^F,o,O,<:>,0),0],0},0=except,0=elif
+setlocal indentkeys=!^F,o,O,<:>,0),0],0},0=except,0=elif,0=case
 
 
 " Search for pairs within 150 lines range and no longer than 400 milliseconds.
