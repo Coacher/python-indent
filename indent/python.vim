@@ -165,19 +165,19 @@ function! s:FindOutermostOpeningBracket()
 endfunction
 
 
-" Search from the current cursor position backwards
+" Search from the current line backwards
 " until the beginning of the explicit line join is found.
 function! s:FindLineJoinStart()
-	let l:curlnum = line('.')
-	let l:prevlnum = l:curlnum - 1
+	let l:prevlnum = line('.') - 1
+	let l:lastchar = col([l:prevlnum, '$']) - 1
 
-	while ((getline(l:prevlnum) =~# '\\$') &&
-		\  (s:SyntaxItemName(l:prevlnum, col([l:prevlnum, '$']) - 1) ==# 'pythonLineJoin'))
-		let l:curlnum = l:prevlnum
-		let l:prevlnum = l:curlnum - 1
+	while (getline(l:prevlnum)[l:lastchar] ==# '\') &&
+		\ (s:SyntaxName(l:prevlnum, l:lastchar) ==# 'pythonLineJoin')
+		let l:prevlnum -= 1
+		let l:lastchar = col([l:prevlnum, '$']) - 1
 	endwhile
 
-	return l:curlnum
+	return l:prevlnum + 1
 endfunction
 
 
