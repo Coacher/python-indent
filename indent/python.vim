@@ -67,7 +67,7 @@ let s:compound_stmt_kwrd =
 " Match keywords that stop execution of code suites.
 " https://docs.python.org/2/reference/simple_stmts.html
 " https://docs.python.org/3/reference/simple_stmts.html
-let s:code_suite_stop = '^\s*\%(return\|raise\|pass\|continue\|break\)\>'
+let s:code_suite_stop = '\C\_^\s*\%(return\|raise\|pass\|continue\|break\)\>'
 
 " Match keywords that can start explicit line joins,
 " except for keywords that can use implicit continuation.
