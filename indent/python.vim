@@ -239,30 +239,32 @@ endfunction
 " }}}
 
 
-" Recalculate indentation of the current line.
+" Recalculate the indentation for the current line.
 function! GetPythonIndent()
-	let l:cursynstack = s:SynStackNames()
+	let l:cursynstack = s:AllSyntaxNames()
 
-	if !(match(l:cursynstack, '\CpythonComment') < 0)
-		" Preserve the current indentation inside comments.
+	if (match(l:cursynstack, '\CpythonComment') >= 0)
+		" Inside comments keep the current indentation.
 		return -1
 	endif
 
-	if !(match(l:cursynstack, '\Cpython\a*\%(String\|Quotes\)') < 0)
+	if (match(l:cursynstack, '\Cpython\a*\%(String\|Quotes\)') >= 0)
 		let [l:quote_lnum, l:quote_col] = s:FindOpeningQuote()
-		" Make sure it isn't a closing quote(s) before the opening one(s).
-		if !(match(s:SynStackNames(l:quote_lnum, l:quote_col), '\Cpython\a*String') < 0)
+		if (l:quote_lnum > 0)
 			" Inside strings proceed as follows.
-			if (l:quote_lnum != v:lnum - 1)
-				" Preserve the current indentation, unless ...
-				return -1
+			if (l:quote_lnum == v:lnum - 1)
+				" If the opening quote(s) is on the previous line, ...
+				if (l:quote_col == matchend(getline(l:quote_lnum), '^\s*') + 3) &&
+				\  (s:SyntaxName(l:quote_lnum, l:quote_col) ==# 'pythonTripleQuotes')
+					" keep the current indentation for docstrings or ...
+					return -1
+				else
+					" add one level of indentation for regular strings.
+					return indent(l:quote_lnum) + &shiftwidth
+				endif
 			else
-				" the opening quote(s) is on the previous line.
-				" In the latter case, vertically align
-				" docstrings with the indentation of the opening quotes and
-				" add one extra level of indentation for regular strings.
-				return (l:quote_col == matchend(getline(l:quote_lnum), '^\s*\%("""\|''''''\)'))
-					\  ? -1 : indent(l:quote_lnum) + &shiftwidth
+				" Otherwise, keep the current indentation.
+				return -1
 			endif
 		endif
 	endif
