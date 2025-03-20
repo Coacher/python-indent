@@ -52,8 +52,8 @@ setlocal indentexpr=GetPythonIndent()
 setlocal indentkeys=!^F,o,O,<:>,0),0],0},0=except,0=elif,0=case
 
 
-" Search for pairs within 150 lines range and no longer than 400 milliseconds.
-let s:searchpair_offset = 150
+" Search for pairs within 250 lines range and no longer than 400 milliseconds.
+let s:searchpair_offset = 250
 let s:searchpair_timeout = 400
 
 
