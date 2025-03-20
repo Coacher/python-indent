@@ -213,19 +213,20 @@ function! s:FindLogicalLineStart(line)
 endfunction
 
 
-" Search from the current cursor position backwards
-" until the clause header that matches the given regex is found.
-function! s:FindPrecedingHeader(regex)
-	let l:curlnum = prevnonblank(line('.') - 1)
+" Search from the given line backwards
+" until the clause header that matches the given regex is found,
+" return the indentation of the found clause header.
+function! s:FindPrecedingHeaderIndent(line, regex)
+	let l:curlnum = a:line
 	let l:curindent = indent(l:curlnum)
-	let l:minindent = l:curindent + 1
+	let l:maxindent = l:curindent
 
-	while ((l:curlnum > 0) && (l:minindent > 0))
-		if (l:curindent < l:minindent)
+	while (l:curlnum > 0) && (l:maxindent > 0)
+		if (l:curindent <= l:maxindent)
 			if (getline(l:curlnum) =~# a:regex)
-				return [l:curlnum, l:curindent]
+				return l:curindent
 			else
-				let l:minindent = l:curindent
+				let l:maxindent = l:curindent
 			endif
 		endif
 
@@ -233,7 +234,7 @@ function! s:FindPrecedingHeader(regex)
 		let l:curindent = indent(l:curlnum)
 	endwhile
 
-	return [l:curlnum, l:curindent]
+	return l:curindent
 endfunction
 " }}}
 
