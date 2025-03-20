@@ -76,11 +76,11 @@ let s:multiline_kwrd =
 
 " Map clause headers to the appropriate preceding ones.
 let s:header2preceding = {
-	\ '^\s*else\>':    '^\s*\%(if\|for\|except\|elif\|while\|async\s\+for\)\>',
-	\ '^\s*except\>':  '^\s*\%(try\|except\)\>',
-	\ '^\s*elif\>':    '^\s*\%(if\|elif\)\>',
-	\ '^\s*finally\>': '^\s*\%(try\|except\|else\)\>',
-	\ '^\s*case\>':    '^\s*\%(case\)\>',
+	\ '\C\_^\s*else\>':    '\C\_^\s*\%(if\|for\|except\|elif\|while\|async\s\+for\)\>',
+	\ '\C\_^\s*except\>':  '\C\_^\s*\%(try\|except\)\>',
+	\ '\C\_^\s*elif\>':    '\C\_^\s*\%(if\|elif\)\>',
+	\ '\C\_^\s*finally\>': '\C\_^\s*\%(try\|except\|else\)\>',
+	\ '\C\_^\s*case\>':    '\C\_^\s*case\>',
 \}
 
 
