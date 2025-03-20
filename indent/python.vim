@@ -39,7 +39,7 @@ setlocal shiftwidth=4
 " > Python disallows mixing tabs and spaces for indentation.
 setlocal softtabstop=0
 
-if (g:python_indent_use_spaces_for_indentation)
+if g:python_indent_use_spaces_for_indentation
 	" > Spaces are the preferred indentation method.
 	" > Tabs should be used solely to remain consistent
 	" > with code that is already indented with tabs.
