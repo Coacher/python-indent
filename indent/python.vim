@@ -287,34 +287,37 @@ function! GetPythonIndent()
 
 	let [l:bracket_lnum, l:bracket_col] = s:FindInnermostOpeningBracket()
 	if (l:bracket_lnum > 0)
-		" Between brackets proceed as follows.
+		" Around brackets proceed as follows.
 		let l:bracket_line = getline(l:bracket_lnum)
-		let l:bracket_indent = indent(l:bracket_lnum)
-
-		if (match(strpart(l:bracket_line, l:bracket_col), '^\s*\%(\_$\|#\)') < 0)
-			" If the opening bracket isn't followed only by spaces or a comment ...
-			if (l:bracket_col != matchend(l:bracket_line, '\C\_^\s*if\s') + 1)
-				" align vertically after the opening bracket, unless ...
-				return l:bracket_col
+		if (match(l:bracket_line, '^\s*\%(\_$\|#\)', l:bracket_col) >= 0)
+			" If the opening bracket is followed only by spaces or a comment, ...
+			if (getline(v:lnum) !~# '^\s*[)\]}]')
+				" if the current line doesn't start with the closing bracket,
+				" add one level to the opening bracket's indentation, ...
+				return indent(l:bracket_lnum) + &shiftwidth
+			elseif (l:bracket_col == matchend(l:bracket_line, s:compound_stmt_kwrd) + 1)
+				" if the current line starts with the closing bracket of a compound statement,
+				" use the opening bracket's indentation, ...
+				return indent(l:bracket_lnum)
 			else
-				" the 'if' keyword precedes the opening bracket.
-				" In the latter case, align vertically after the opening bracket
-				" and add one extra level of indentation if configured by user.
-				return l:bracket_col +
-					\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition
+				" if the current line starts with the regular closing bracket,
+				" use the opening bracket's indentation or
+				" use the previous non-blank line's indentation when configured by user.
+				return g:python_indent_line_up_closing_bracket_with_last_line
+					\  ? indent(prevnonblank(v:lnum - 1)) : indent(l:bracket_lnum)
 			endif
 		else
-			" If the opening bracket is followed only by spaces or a comment ...
-			if !((l:curline =~# '^\s*[)\]}]$') && !g:python_indent_line_up_closing_bracket_with_last_line)
-				" add one level of indentation to the indentation of the line with the opening bracket
-				" and add one more level when a keyword precedes the opening bracket, unless ...
-				return l:bracket_indent + &shiftwidth +
-					\  &shiftwidth * (l:bracket_col == matchend(l:bracket_line, s:compound_stmt_kwrd) + 1)
+			" If the opening bracket isn't followed only by spaces or a comment, ...
+			if (l:bracket_col != matchend(l:bracket_line, '\C\_^\s*if\s') + 1)
+				" if the 'if' keyword doesn't precede the opening bracket,
+				" vertically align with the opening bracket, ...
+				return l:bracket_col
 			else
-				" the current line is the hanging closing bracket
-				" and it is configured by user to be aligned with
-				" the indentation of the line with the opening bracket.
-				return l:bracket_indent
+				" if the 'if' keyword precedes the opening bracket,
+				" vertically align with the opening bracket and
+				" add one extra level of indentation when configured by user.
+				return l:bracket_col +
+					\  &shiftwidth * g:python_indent_extra_indent_in_multiline_if_condition
 			endif
 		endif
 	endif
