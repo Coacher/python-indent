@@ -129,13 +129,14 @@ let s:brackets_skip = 's:SyntaxName() !=# ''pythonDelimiter'''
 
 function! s:FindInnermostOpeningBracket()
 	let l:brackets_positions = []
+	let l:stopline = max([line('.') - s:searchpair_offset, 1])
 
 	" Order brackets to make positions already sorted in most cases.
 	for l:brackets in ['{}', '[]', '()']
 		call add(l:brackets_positions,
 				\searchpairpos(
-					\ '\V'.l:brackets[0], '', '\V'.l:brackets[1], 'bnW', s:brackets_skip,
-					\ max([line('.') - s:searchpair_offset, 1]), s:searchpair_timeout
+					\ '\V'.l:brackets[0], '', '\V'.l:brackets[1], 'bnW',
+					\ s:brackets_skip, l:stopline, s:searchpair_timeout
 				\)
 			\)
 	endfor
@@ -148,13 +149,14 @@ endfunction
 " until the outermost unmatched opening bracket is found.
 function! s:FindOutermostOpeningBracket()
 	let l:brackets_positions = []
+	let l:stopline = max([line('.') - s:searchpair_offset, 1])
 
 	" Order brackets to make positions already sorted in most cases.
 	for l:brackets in ['{}', '[]', '()']
 		call add(l:brackets_positions,
 				\searchpairpos(
-					\ '\V'.l:brackets[0], '', '\V'.l:brackets[1], 'bnWr', s:brackets_skip,
-					\ max([line('.') - s:searchpair_offset, 1]), s:searchpair_timeout
+					\ '\V'.l:brackets[0], '', '\V'.l:brackets[1], 'bnWr',
+					\ s:brackets_skip, l:stopline, s:searchpair_timeout
 				\)
 			\)
 	endfor
