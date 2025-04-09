@@ -171,7 +171,7 @@ function! s:FindLineJoinStart()
 	let l:prevlnum = line('.') - 1
 	let l:lastchar = col([l:prevlnum, '$']) - 1
 
-	while (getline(l:prevlnum)[l:lastchar] ==# '\') &&
+	while (getline(l:prevlnum)[l:lastchar - 1] ==# '\') &&
 		\ (s:SyntaxName(l:prevlnum, l:lastchar) ==# 'pythonLineJoin')
 		let l:prevlnum -= 1
 		let l:lastchar = col([l:prevlnum, '$']) - 1
